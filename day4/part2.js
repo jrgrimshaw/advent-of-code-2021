@@ -16,6 +16,8 @@ function checkWinner(bingoBoard) {
 }
 
 function drawNumbers(bingoNumbers, bingoBoards) {
+  let winningBoards = [];
+
   // Draw numbers
   for (let bingoNumber of bingoNumbers) {
     for (let b = 0; b < bingoBoards.length; b++) {
@@ -25,10 +27,14 @@ function drawNumbers(bingoNumbers, bingoBoards) {
             bingoBoards[b][r][n].marked = true;
 
             if (checkWinner(bingoBoards[b])) {
-              return {
-                winningBoard: bingoBoards[b],
-                winningNumber: bingoNumber,
-              };
+              winningBoards[b] = bingoBoards[b];
+
+              if (winningBoards.filter(Boolean).length === bingoBoards.length) {
+                return {
+                  lastWinningBoard: bingoBoards[b],
+                  lastCalledNumber: bingoNumber,
+                };
+              }
             }
           }
         }
@@ -58,20 +64,20 @@ async function main() {
         )
     );
 
-  const { winningBoard, winningNumber } = drawNumbers(
+  const { lastWinningBoard, lastCalledNumber } = drawNumbers(
     bingoNumbers,
     bingoBoards
   );
 
   let unmarkedNumbersSum = 0;
-  for (let r = 0; r < winningBoard.length; r++) {
-    for (let n = 0; n < winningBoard[r].length; n++) {
-      if (!winningBoard[r][n].marked)
-        unmarkedNumbersSum += parseInt(winningBoard[r][n].num);
+  for (let r = 0; r < lastWinningBoard.length; r++) {
+    for (let n = 0; n < lastWinningBoard[r].length; n++) {
+      if (!lastWinningBoard[r][n].marked)
+        unmarkedNumbersSum += parseInt(lastWinningBoard[r][n].num);
     }
   }
 
-  console.log(unmarkedNumbersSum * winningNumber);
+  console.log(unmarkedNumbersSum * lastCalledNumber);
 }
 
 main();
